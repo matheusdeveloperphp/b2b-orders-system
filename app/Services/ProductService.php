@@ -22,7 +22,7 @@ class ProductService
      * @param $id
      * @return Collection
      */
-    public function list($id)
+    public function list()
     {
         return $this->repository->all();
     }
