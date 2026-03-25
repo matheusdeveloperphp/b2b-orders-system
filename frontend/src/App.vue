@@ -1,32 +1,30 @@
 <template>
-  <div style="padding: 20px">
-    <h1>📦 Produtos</h1>
+  <div class="container">
+    <h1>📦 Gestão de Produtos</h1>
 
-    <div>
-      <input v-model="name" placeholder="Nome do produto"/>
-      <input v-model="price" placeholder="Preço"/>
-      <button @click="createProduct">Criar</button>
-    </div>
+    <ProductForm @create="createProduct"/>
 
-    <hr/>
-
-    <ul>
-      <li v-for="p in products" :key="p.id">
-        {{ p.name }} - R$ {{ p.price }}
-      </li>
-    </ul>
+    <ProductList
+        :products="products"
+        @update="updateProduct"
+        @delete="deleteProduct"
+    />
   </div>
 </template>
 
 <script>
 import api from './services/api'
+import ProductForm from './components/ProductForm.vue'
+import ProductList from './components/ProductList.vue'
 
 export default {
+  components: {
+    ProductForm,
+    ProductList
+  },
   data() {
     return {
-      products: [],
-      name: '',
-      price: ''
+      products: []
     }
   },
   mounted() {
@@ -37,13 +35,22 @@ export default {
       const res = await api.get('/products')
       this.products = res.data
     },
-    async createProduct() {
-      await api.post('/products', {
-        name: this.name,
-        price: this.price
+
+    async createProduct(product) {
+      await api.post('/products', product)
+      this.loadProducts()
+    },
+
+    async updateProduct(product) {
+      await api.put(`/products/${product.id}`, {
+        name: product.name,
+        price: product.price
       })
-      this.name = ''
-      this.price = ''
+      this.loadProducts()
+    },
+
+    async deleteProduct(id) {
+      await api.delete(`/products/${id}`)
       this.loadProducts()
     }
   }
