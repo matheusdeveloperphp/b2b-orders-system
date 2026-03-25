@@ -63,16 +63,22 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        //
+        return response()->json(
+            $this->productService->update($id, $request->all())
+        );
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        //
+        $this->productService->delete($id);
+        
+        return response()->json([
+            'message' => 'Produto deletado com sucesso'
+        ]);
     }
 }
