@@ -1,11 +1,51 @@
-<script setup></script>
-
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <div style="padding: 20px">
+    <h1>📦 Produtos</h1>
+
+    <div>
+      <input v-model="name" placeholder="Nome do produto"/>
+      <input v-model="price" placeholder="Preço"/>
+      <button @click="createProduct">Criar</button>
+    </div>
+
+    <hr/>
+
+    <ul>
+      <li v-for="p in products" :key="p.id">
+        {{ p.name }} - R$ {{ p.price }}
+      </li>
+    </ul>
+  </div>
 </template>
 
-<style scoped></style>
+<script>
+import api from './services/api'
+
+export default {
+  data() {
+    return {
+      products: [],
+      name: '',
+      price: ''
+    }
+  },
+  mounted() {
+    this.loadProducts()
+  },
+  methods: {
+    async loadProducts() {
+      const res = await api.get('/products')
+      this.products = res.data
+    },
+    async createProduct() {
+      await api.post('/products', {
+        name: this.name,
+        price: this.price
+      })
+      this.name = ''
+      this.price = ''
+      this.loadProducts()
+    }
+  }
+}
+</script>
